@@ -1,0 +1,28 @@
+{
+    "name": "rlangenfeld/cocktail-bar",
+    "description": "Coding challenge F&P",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Robert Langenfeld"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "CocktailBar\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CocktailBar\\Tests\\": "tests/"
+        }
+    }
+}
