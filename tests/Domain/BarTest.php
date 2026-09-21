@@ -94,4 +94,31 @@ final class BarTest extends TestCase
 
         $this->assertEquals(array(3, 3, 2, 2, 2, 2, 2, 2, 2, 3), $bar->getSeats());
     }
+
+    public function testBestMatchSeating()
+    {
+        $bar = new Bar(10);
+
+        $firstGroup = new Group(1, 1);
+        $bar->seat($firstGroup);
+
+        $secondGroup = new Group(2, 5);
+        $bar->seat($secondGroup);
+
+        $thirdGroup = new Group(3, 2);
+        $bar->seat($thirdGroup);
+
+        $fourthGroup = new Group(4, 2);
+        $bar->seat($fourthGroup);
+
+        // make the second and last group leave
+        $bar->leave($secondGroup->id);
+        $bar->leave($fourthGroup->id);
+
+        // make them join the other way around
+        $bar->seat($fourthGroup);
+        $bar->seat($secondGroup);
+
+        $this->assertEquals(array(1, 2, 2, 2, 2, 2, 3, 3, 4, 4), $bar->getSeats());
+    }
 }

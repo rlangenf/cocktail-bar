@@ -23,11 +23,6 @@ final class CircularArray
         return $this->array[$this->normalizeIndex($index)];
     }
 
-    private function normalizeIndex(int $index): int
-    {
-        return ($index % $this->size + $this->size) % $this->size;
-    }
-
     public function getAll(): array
     {
         return $this->array;
@@ -41,5 +36,10 @@ final class CircularArray
     public function size(): int
     {
         return $this->size;
+    }
+
+    private function normalizeIndex(int $index): int
+    {
+        return ($index % $this->size + $this->size) % $this->size;
     }
 }

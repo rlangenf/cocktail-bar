@@ -31,52 +31,135 @@ final class Bar
         return $this->seats->getAll();
     }
 
+    /**
+     * This function attempts to seat a group at the bar. It returns true if the group was successfully seated, false otherwise.
+     *
+     * @param Group $group
+     * @return bool
+     */
     public function seat(Group $group): bool
     {
         if ($group->size > $this->capacity) {
             return false;
         }
 
-        $emptySeats = array_keys($this->seats->getAll(), null);
+        $seatGroup = $this->findBestMatchingSeatGroup($group->size);
 
-        // seat number from which the group can start sitting
-        $groupStartIndex = null;
-        $key = 0;
-
-        while ($key < count($emptySeats)) {
-            $seatNumber = $emptySeats[$key];
-            $groupStartIndex = $seatNumber;
-
-            // check if next seat number is available
-            for ($i = 1; $i < $group->size; $i++) {
-
-                // if the next seat is occupied, go to next empty seat
-                if ($this->seats->get($seatNumber + $i) != null) {
-                    $groupStartIndex = null;
-
-                    // skip already checked empty seats
-                    $key += $i;
-
-                    break;
-                }
-            }
-
-            if ($groupStartIndex !== null) {
-                break;
-            }
-        }
-
-        if ($groupStartIndex === null) {
+        if ($seatGroup === null) {
             return false;
         }
 
-        for ($i = 0; $i < $group->size; $i++) {
-            $this->seats->set($groupStartIndex + $i, $group->id);
-        }
+        $this->seatGroupAt($seatGroup['index'], $group);
 
         return true;
     }
 
+    /**
+     * This function checks the whole bar for adjacent empty seats and returns indexes and sizes of the groups in an array.
+     *
+     * @return null|array{index: int, size: int}[]
+     */
+    private function findBestMatchingSeatGroup(int $groupSize): ?array
+    {
+        $bestMatch = null;
+
+        foreach ($this->getEmptySeatGroups() as $seatGroup) {
+            if ($seatGroup['size'] < $groupSize) {
+                continue;
+            }
+
+            if ($bestMatch === null || $seatGroup['size'] < $bestMatch['size']) {
+                $bestMatch = $seatGroup;
+            }
+        }
+
+        return $bestMatch;
+    }
+
+    /**
+     * This function checks the whole bar for adjacent empty seats and returns indexes and sizes of the groups in an array.
+     *
+     * @return array{index: int, size: int}[]
+     */
+    private function getEmptySeatGroups(): array
+    {
+        $groups = [];
+        $currentGroup = null;
+
+        for ($i = 0; $i < $this->seats->size(); $i++) {
+            if ($this->seats->get($i) !== null) {
+                if ($currentGroup !== null) {
+                    $groups[] = $currentGroup;
+                    $currentGroup = null;
+                }
+
+                continue;
+            }
+
+            $currentGroup ??= [
+                'index' => $i,
+                'size' => 0,
+            ];
+
+            $currentGroup['size']++;
+        }
+
+        if ($currentGroup !== null) {
+            $groups[] = $currentGroup;
+        }
+
+        return $this->mergeCircularGroups($groups);
+    }
+
+    /**
+     * If there is more than one group, this function checks if the first and the last group are circular.
+     * If so, merge them to form a single group.
+     *
+     * @param array{index: int, size: int}[] $groups
+     * @return array{index: int, size: int}[]
+     */
+    private function mergeCircularGroups(array $groups): array
+    {
+        if (count($groups) < 2) {
+            return $groups;
+        }
+
+        $first = $groups[0];
+        $lastIndex = count($groups) - 1;
+        $last = $groups[$lastIndex];
+
+        if (
+            $first['index'] !== 0 ||
+            $last['index'] + $last['size'] !== $this->seats->size()
+        ) {
+            return $groups;
+        }
+
+        $groups[$lastIndex]['size'] += $first['size'];
+
+        array_shift($groups);
+
+        return $groups;
+    }
+
+    /**
+     * Seats a group at a given index.
+     *
+     * @param int $index The index at which to seat the group.
+     * @param Group $group The group to seat.
+     */
+    private function seatGroupAt(int $index, Group $group): void
+    {
+        for ($i = 0; $i < $group->size; $i++) {
+            $this->seats->set($index + $i, $group->id);
+        }
+    }
+
+    /**
+     * Removes a group from the bar.
+     *
+     * @param int $groupId The ID of the group to remove.
+     */
     public function leave(int $groupId): void
     {
         foreach ($this->seatingFor($groupId) as $seatNumber) {
@@ -84,12 +167,13 @@ final class Bar
         }
     }
 
-    public function isSeatEmpty($seatNumber): bool
-    {
-        return $this->seats->get($seatNumber) === null;
-    }
-
-    public function seatingFor(int $groupId): array
+    /**
+     * Returns the seating keys for a given group ID.
+     *
+     * @param int $groupId The ID of the group to retrieve the seating arrangement for.
+     * @return array An array of keys (i.e. seat numbers) where the group is seated.
+     */
+    private function seatingFor(int $groupId): array
     {
         return array_keys($this->seats->getAll(), $groupId);
     }
