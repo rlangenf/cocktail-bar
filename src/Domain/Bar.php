@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CocktailBar\Domain;
 
 use CocktailBar\Support\CircularArray;
@@ -26,6 +28,9 @@ final class Bar
         return $this->capacity;
     }
 
+    /**
+     * @return array<int, int|null>
+     */
     public function getSeats(): array
     {
         return $this->seats->getAll();
@@ -55,8 +60,9 @@ final class Bar
     }
 
     /**
-     * This function checks the whole bar for adjacent empty seats and returns indexes and sizes of the groups in an array.
+     * This function attempts to find the best matching empty seat group for a given group size.
      *
+     * @param int $groupSize
      * @return null|array{index: int, size: int}[]
      */
     private function findBestMatchingSeatGroup(int $groupSize): ?array

@@ -1,6 +1,6 @@
 <?php
 
-namespace CocktailBar\Tests\Domain;
+namespace CocktailBar\Tests\Support;
 
 use CocktailBar\Support\CircularArray;
 use InvalidArgumentException;

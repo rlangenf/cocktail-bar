@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CocktailBar\Domain;
 
 final readonly class Group
 {
     public function __construct(
-        public readonly int $id,
-        public readonly int $size
+        public int $id,
+        public int $size
     )
     {
         if ($size <= 0) {
