@@ -41,8 +41,10 @@ final class Bar
 
         // seat number from which the group can start sitting
         $groupStartIndex = null;
+        $key = 0;
 
-        foreach ($emptySeats as $seatNumber) {
+        while ($key < count($emptySeats)) {
+            $seatNumber = $emptySeats[$key];
             $groupStartIndex = $seatNumber;
 
             // check if next seat number is available
@@ -51,6 +53,10 @@ final class Bar
                 // if the next seat is occupied, go to next empty seat
                 if ($this->seats->get($seatNumber + $i) != null) {
                     $groupStartIndex = null;
+
+                    // skip already checked empty seats
+                    $key += $i;
+
                     break;
                 }
             }
