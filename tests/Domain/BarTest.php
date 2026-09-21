@@ -3,6 +3,7 @@
 namespace CocktailBar\Tests\Domain;
 
 use CocktailBar\Domain\Bar;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class BarTest extends TestCase
@@ -11,12 +12,18 @@ class BarTest extends TestCase
     {
         $bar = new Bar(10);
         $this->assertEquals(10, $bar->getCapacity());
+    }
 
-        $this->expectException(\InvalidArgumentException::class);
-        $bar = new Bar(0);
+    public function testBarCapacityCannotBeZero()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new Bar(0);
+    }
 
-        $this->expectException(\InvalidArgumentException::class);
-        $bar = new Bar(-1);
+    public function testBarCapacityCannotBeNegative()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new Bar(-1);
     }
 
     public function testSeats()

@@ -9,5 +9,8 @@ final readonly class Group
         public readonly int $size
     )
     {
+        if ($size <= 0) {
+            throw new \InvalidArgumentException('Group size must be greater than zero');
+        }
     }
 }
