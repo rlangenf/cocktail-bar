@@ -7,6 +7,10 @@ use CocktailBar\Application\LoungeService;
 
 final readonly class LoungeCommand
 {
+
+    private const int COLUMN_WIDTH = 10;
+    private const int SEATS_PER_LINE = 10;
+
     public function __construct(
         private LoungeService $loungeService
     )
@@ -43,7 +47,7 @@ final readonly class LoungeCommand
         return <<<TEXT
             Available commands:
             enter <size> - enter the lounge with a bar of size <size>
-            leave <groupId> - leave the lounge with a group of size <groupId>
+            leave <groupId> - removes the group with id <groupId>
             status - print the current seating 
             help - print this help message
             exit - exit the application
@@ -66,6 +70,10 @@ final readonly class LoungeCommand
         };
     }
 
+    /**
+     * @param array<int, string> $parts
+     * @return string
+     */
     private function handleEnter(array $parts): string
     {
         if (count($parts) !== 2 || !is_numeric($parts[1])) {
@@ -86,11 +94,10 @@ final readonly class LoungeCommand
         return "Group $groupId seated\n";
     }
 
-    private function errorMessage(string $message): string
-    {
-        return "Error: $message\n";
-    }
-
+    /**
+     * @param array<int, string> $parts
+     * @return string
+     */
     private function handleLeave(array $parts): string
     {
         if (count($parts) !== 2 || !is_numeric($parts[1])) {
@@ -106,22 +113,56 @@ final readonly class LoungeCommand
         }
     }
 
-    private function handleStatus(): string
+    private function errorMessage(string $message): string
     {
-        return $this->printStatus();
+        return "Error: $message\n";
     }
 
-    private function printStatus(): string
+    private function handleStatus(): string
     {
-        echo "\nCurrent seating:\n";
-        print_r($this->loungeService->seats());
 
-        echo "\nSeated groups:\n";
-        echo "\nGroup-ID | Size\n";
-        foreach ($this->loungeService->groups() as $group) {
-            echo "$group->id | $group->size\n";
+        $out = "\nCurrent seating:\n";
+        $out .= "-> ";
+
+        $seats = $this->loungeService->seats();
+
+        $seatCount = 0;
+        foreach ($seats as $seatNumber => $seat) {
+            $out .= $this->seatCell($seatNumber, $seat);
+
+            if ($seatNumber === count($seats) - 1) {
+                $out .= "->";
+            }
+
+            $seatCount++;
+            if ($seatCount % self::SEATS_PER_LINE === 0) {
+                $out .= "\n";
+            }
         }
 
-        return '';
+        $out .= "\nSeated groups:\n";
+        $out .= $this->tableRow('Group-ID', 'Size');
+
+        foreach ($this->loungeService->groups() as $group) {
+            $out .= $this->tableRow((string)$group->id, (string)$group->size);
+        }
+
+        return $out;
+    }
+
+    private function seatCell(int $seatNumber, ?int $groupId): string
+    {
+        return '[' . $seatNumber . ': ' . ($groupId ?? '_') . '] ';
+    }
+
+    /**
+     * Renders a single right-aligned table row.
+     */
+    private function tableRow(string $groupId, string $size): string
+    {
+        return str_pad($groupId, self::COLUMN_WIDTH, ' ', STR_PAD_LEFT)
+            . ' | '
+            . str_pad($size, self::COLUMN_WIDTH, ' ', STR_PAD_LEFT)
+            . "\n";
     }
 }

@@ -49,4 +49,14 @@ class LoungeCommandTest extends TestCase
         $cmd = new LoungeCommand(new LoungeService(new Bar(6)));
         $this->assertStringContainsString('Unknown command', $cmd->handle('foo'));
     }
+
+    public function testStatus()
+    {
+        $cmd = new LoungeCommand(new LoungeService(new Bar(6)));
+
+        $cmd->handle('enter 2');
+        $status = $cmd->handle('status');
+
+        $this->assertStringContainsString('-> [0: 1] [1: 1] [2: _] [3: _] [4: _] [5: _] ->', $status);
+    }
 }
