@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace CocktailBar\Domain;
 
+use InvalidArgumentException;
+
 final readonly class Group
 {
     public function __construct(
@@ -12,7 +14,7 @@ final readonly class Group
     )
     {
         if ($size <= 0) {
-            throw new \InvalidArgumentException('Group size must be greater than zero');
+            throw new InvalidArgumentException('Group size must be greater than zero');
         }
     }
 }

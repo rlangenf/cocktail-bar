@@ -66,7 +66,7 @@ final class LoungeService
     }
 
     /**
-     * @return array<int, int|null>
+     * @return array<int|null>
      */
     public function seats(): array
     {

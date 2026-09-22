@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CocktailBar\Tests\Domain;
 
@@ -9,45 +10,45 @@ use PHPUnit\Framework\TestCase;
 
 final class BarTest extends TestCase
 {
-    public function testBarCapacity()
+    public function testBarCapacity(): void
     {
         $bar = new Bar(10);
         $this->assertEquals(10, $bar->getCapacity());
     }
 
-    public function testBarCapacityCannotBeZero()
+    public function testBarCapacityCannotBeZero(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Bar(0);
     }
 
-    public function testBarCapacityCannotBeNegative()
+    public function testBarCapacityCannotBeNegative(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Bar(-1);
     }
 
-    public function testSeats()
+    public function testSeats(): void
     {
         $bar = new Bar(10);
         $this->assertEquals(array_fill(0, 10, null), $bar->getSeats());
     }
 
-    public function testEmptyBarAcceptsGroup()
+    public function testEmptyBarAcceptsGroup(): void
     {
         $bar = new Bar(10);
         $group = new Group(1, 5);
         $this->assertTrue($bar->seat($group));
     }
 
-    public function testBarDeclinesGroup()
+    public function testBarDeclinesGroup(): void
     {
         $bar = new Bar(1);
         $group = new Group(1, 5);
         $this->assertFalse($bar->seat($group));
     }
 
-    public function testGroupCanLeave()
+    public function testGroupCanLeave(): void
     {
         $bar = new Bar(10);
         $group = new Group(1, 5);
@@ -56,7 +57,7 @@ final class BarTest extends TestCase
         $this->assertEquals(array_fill(0, 10, null), $bar->getSeats());
     }
 
-    public function testGroupIsSeated()
+    public function testGroupIsSeated(): void
     {
         $bar = new Bar(10);
         $group = new Group(1, 5);
@@ -65,7 +66,7 @@ final class BarTest extends TestCase
         $this->assertEquals(array(1, 1, 1, 1, 1, null, null, null, null, null), $bar->getSeats());
     }
 
-    public function testTwoGroupsCanSeat()
+    public function testTwoGroupsCanSeat(): void
     {
         $bar = new Bar(10);
         $firstGroup = new Group(1, 5);
@@ -77,7 +78,7 @@ final class BarTest extends TestCase
         $this->assertEquals(array(1, 1, 1, 1, 1, 2, 2, 2, 2, 2), $bar->getSeats());
     }
 
-    public function testGroupSeatingWrapsAround()
+    public function testGroupSeatingWrapsAround(): void
     {
         $bar = new Bar(10);
 
@@ -95,7 +96,7 @@ final class BarTest extends TestCase
         $this->assertEquals(array(3, 3, 2, 2, 2, 2, 2, 2, 2, 3), $bar->getSeats());
     }
 
-    public function testBestMatchSeating()
+    public function testBestMatchSeating(): void
     {
         $bar = new Bar(10);
 

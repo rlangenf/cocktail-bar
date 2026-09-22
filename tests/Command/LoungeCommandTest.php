@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class LoungeCommandTest extends TestCase
 {
-    public function testInputHandle()
+    public function testInputHandle(): void
     {
         $cmd = new LoungeCommand(new LoungeService(new Bar(6)));
 
@@ -19,7 +19,7 @@ class LoungeCommandTest extends TestCase
         $this->assertSame("Group 2 seated\n", $cmd->handle('enter     2'));
     }
 
-    public function testFaultyInputHandle()
+    public function testFaultyInputHandle(): void
     {
         $cmd = new LoungeCommand(new LoungeService(new Bar(4)));
 
@@ -31,7 +31,7 @@ class LoungeCommandTest extends TestCase
         $this->assertStringContainsString('Group 99 not found', $cmd->handle('leave 99'));
     }
 
-    public function testHelp()
+    public function testHelp(): void
     {
         $cmd = new LoungeCommand(new LoungeService(new Bar(6)));
 
@@ -44,19 +44,22 @@ class LoungeCommandTest extends TestCase
         $this->assertStringContainsString('exit', $help);
     }
 
-    public function testUnknownCommand()
+    public function testUnknownCommand(): void
     {
         $cmd = new LoungeCommand(new LoungeService(new Bar(6)));
         $this->assertStringContainsString('Unknown command', $cmd->handle('foo'));
     }
 
-    public function testStatus()
+    public function testStatus(): void
     {
         $cmd = new LoungeCommand(new LoungeService(new Bar(6)));
 
         $cmd->handle('enter 2');
+        $cmd->handle('enter 5');
         $status = $cmd->handle('status');
 
         $this->assertStringContainsString('-> [0: 1] [1: 1] [2: _] [3: _] [4: _] [5: _] ->', $status);
+        $this->assertStringContainsString('Seated groups:', $status);
+        $this->assertStringContainsString('Rejected groups:', $status);
     }
 }

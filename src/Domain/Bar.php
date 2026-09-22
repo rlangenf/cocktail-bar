@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CocktailBar\Domain;
 
 use CocktailBar\Support\CircularArray;
+use InvalidArgumentException;
 
 final class Bar
 {
@@ -15,7 +16,7 @@ final class Bar
     public function __construct(int $capacity)
     {
         if ($capacity <= 0) {
-            throw new \InvalidArgumentException('Capacity must be greater than 0');
+            throw new InvalidArgumentException('Capacity must be greater than 0');
         }
 
         $this->capacity = $capacity;
@@ -29,7 +30,7 @@ final class Bar
     }
 
     /**
-     * @return array<int, int|null>
+     * @return array<int|null>
      */
     public function getSeats(): array
     {
@@ -44,7 +45,7 @@ final class Bar
      */
     public function seat(Group $group): bool
     {
-        if ($group->size > $this->capacity) {
+        if ($group->size > $this->capacity || !empty($this->seatingFor($group->id))) {
             return false;
         }
 
@@ -63,7 +64,7 @@ final class Bar
      * This function attempts to find the best matching empty seat group for a given group size.
      *
      * @param int $groupSize
-     * @return null|array{index: int, size: int}[]
+     * @return null|array{index: int, size: int}
      */
     private function findBestMatchingSeatGroup(int $groupSize): ?array
     {
@@ -177,10 +178,10 @@ final class Bar
      * Returns the seating keys for a given group ID.
      *
      * @param int $groupId The ID of the group to retrieve the seating arrangement for.
-     * @return array An array of keys (i.e. seat numbers) where the group is seated.
+     * @return int[] An array of keys (i.e. seat numbers) where the group is seated.
      */
     private function seatingFor(int $groupId): array
     {
-        return array_keys($this->seats->getAll(), $groupId);
+        return array_keys($this->seats->getAll(), $groupId, true);
     }
 }

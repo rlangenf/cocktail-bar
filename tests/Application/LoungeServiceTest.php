@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class LoungeServiceTest extends TestCase
 {
-    public function testLoungeServiceEnter()
+    public function testLoungeServiceEnter(): void
     {
         $bar = new Bar(10);
         $loungeService = new LoungeService($bar);
@@ -19,7 +19,7 @@ class LoungeServiceTest extends TestCase
         $this->assertSame(1, $groupId);
     }
 
-    public function testLoungeServiceLeave()
+    public function testLoungeServiceLeave(): void
     {
         $bar = new Bar(10);
         $loungeService = new LoungeService($bar);
@@ -30,7 +30,7 @@ class LoungeServiceTest extends TestCase
         $this->assertFalse($loungeService->leave($groupId));
     }
 
-    public function testLoungeServiceDenySeats()
+    public function testLoungeServiceDenySeats(): void
     {
         $bar = new Bar(5);
         $loungeService = new LoungeService($bar);

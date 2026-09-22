@@ -59,7 +59,7 @@ final readonly class LoungeCommand
     {
         $parts = preg_split('/\s+/', $input);
 
-        $command = $parts[0];
+        $command = $parts[0] ?: [];
 
         return match ($command) {
             'enter' => $this->handleEnter($parts),

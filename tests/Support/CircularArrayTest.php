@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CocktailBar\Tests\Support;
 
@@ -42,28 +43,28 @@ class CircularArrayTest extends TestCase
     {
         $array = new CircularArray(3);
 
-        $array->set(1, 'foo');
+        $array->set(1, 1);
 
-        $this->assertSame('foo', $array->get(1));
+        $this->assertSame(1, $array->get(1));
     }
 
     public function testIndexWrapsAroundAtEnd(): void
     {
         $array = new CircularArray(3);
 
-        $array->set(0, 'foo');
+        $array->set(0, 1);
 
-        $this->assertSame('foo', $array->get(3));
-        $this->assertSame('foo', $array->get(6));
+        $this->assertSame(1, $array->get(3));
+        $this->assertSame(1, $array->get(6));
     }
 
     public function testNegativeIndexWrapsAroundAtBeginning(): void
     {
         $array = new CircularArray(3);
 
-        $array->set(2, 'foo');
+        $array->set(2, 1);
 
-        $this->assertSame('foo', $array->get(-1));
-        $this->assertSame('foo', $array->get(-4));
+        $this->assertSame(1, $array->get(-1));
+        $this->assertSame(1, $array->get(-4));
     }
 }
