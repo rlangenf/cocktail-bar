@@ -46,9 +46,9 @@ final readonly class LoungeCommand
     {
         return <<<TEXT
             Available commands:
-            enter <size> - enter the lounge with a bar of size <size>
+            enter <size> - tries to seat a group at the bar with the size <size>
             leave <groupId> - removes the group with id <groupId>
-            status - print the current seating 
+            status - print the current bar seating 
             help - print this help message
             exit - exit the application
 
@@ -145,6 +145,15 @@ final readonly class LoungeCommand
 
         foreach ($this->loungeService->groups() as $group) {
             $out .= $this->tableRow((string)$group->id, (string)$group->size);
+        }
+
+        if (!empty($this->loungeService->rejectedGroups())) {
+            $out .= "\nRejected groups:\n";
+            $out .= $this->tableRow('Group-ID', 'Size');
+
+            foreach ($this->loungeService->rejectedGroups() as $group) {
+                $out .= $this->tableRow((string)$group->id, (string)$group->size);
+            }
         }
 
         return $out;

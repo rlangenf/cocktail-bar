@@ -14,6 +14,11 @@ final class LoungeService
      */
     private array $groups = [];
 
+    /**
+     * @var array<int, Group>
+     */
+    private array $rejectedGroups = [];
+
     private int $nextGroupId = 1;
 
     public function __construct(
@@ -38,6 +43,8 @@ final class LoungeService
             return $group->id;
         }
 
+        $this->rejectedGroups[$group->id] = $group;
+
         return null;
     }
 
@@ -59,7 +66,7 @@ final class LoungeService
     }
 
     /**
-     * @return array<int, int>
+     * @return array<int, int|null>
      */
     public function seats(): array
     {
@@ -72,5 +79,13 @@ final class LoungeService
     public function groups(): array
     {
         return $this->groups;
+    }
+
+    /**
+     * @return array<int, Group>
+     */
+    public function rejectedGroups(): array
+    {
+        return $this->rejectedGroups;
     }
 }
